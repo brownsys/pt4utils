@@ -6,15 +6,14 @@ from raw_sample import Current, RawSample, Voltage
 @case
 class Sample(mainCurrent, usbCurrent, auxCurrent, voltage):
     """ Wrapper for sample from Monsoon power monitor """
-    pass
 
+    @staticmethod
+    def fromRaw(rawSample, statusPacket):
+        """ Create and return sample from raw data """
+        mainCurrent = Current(rawSample.mainCurrent)
+        usbCurrent = Current(rawSample.usbCurrent)
+        auxCurrent = Current(rawSample.auxCurrent)
+        voltage = Voltage(rawSample.voltage)
 
-def fromRaw(rawSample, statusPacket):
-    """ Create and return sample from raw data """
-    mainCurrent = Current(rawSample.mainCurrent)
-    usbCurrent = Current(rawSample.usbCurrent)
-    auxCurrent = Current(rawSample.auxCurrent)
-    voltage = Voltage(rawSample.voltage)
-
-    return Sample(mainCurrent.toMilliAmps(), usbCurrent.toMilliAmps(),
-            auxCurrent.toMilliAmps(), voltage.toVolts())
+        return Sample(mainCurrent.toMilliAmps(), usbCurrent.toMilliAmps(),
+                auxCurrent.toMilliAmps(), voltage.toVolts())

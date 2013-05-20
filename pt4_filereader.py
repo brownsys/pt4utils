@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import macropy.core.macros
-import sample
 import sys
 
 from header import ApplicationInfo, Header, Samples, Sum, SumValues
@@ -69,7 +68,7 @@ class Pt4FileReader(Pt4BitReader):
         self.skipBytes(60)
 
         appInfo = ApplicationInfo(captureSetting, swVersion, runMode, exitCode)
-        smpls = Samples(captureDataMask, totalCount, statusOffset, statusSize, sampleOffset, sampleSize)
+        samples = Samples(captureDataMask, totalCount, statusOffset, statusSize, sampleOffset, sampleSize)
 
         sumMain = SumValues(sumMainVoltage, sumMainCurrent, sumMainPower)
         sumUsb = SumValues(sumUsbVoltage, sumUsbCurrent, sumUsbPower)
@@ -90,7 +89,7 @@ class Pt4FileReader(Pt4BitReader):
                 currentField,
                 voltageField,
                 appInfo,
-                smpls,
+                samples,
                 sumAll)
 
 
@@ -187,8 +186,8 @@ def readAsVector(filename):
 
     while reader.isFinished() is False:
         rawSample = reader.readSample(header)
-        smpl = sample.fromRaw(rawSample, statusPacket)
-        yield (header, statusPacket, smpl)
+        sample = Sample.fromRaw(rawSample, statusPacket)
+        yield (header, statusPacket, sample)
 
     reader.close()
 
