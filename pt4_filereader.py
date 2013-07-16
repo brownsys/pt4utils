@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import macropy.core.macros
 import sys
 
 from header import ApplicationInfo, Header, Samples, Sum, SumValues
@@ -68,30 +68,18 @@ class Pt4FileReader(Pt4BitReader):
         self.skipBytes(60)
 
         appInfo = ApplicationInfo(captureSetting, swVersion, runMode, exitCode)
-        samples = Samples(captureDataMask, totalCount, statusOffset, statusSize, sampleOffset, sampleSize)
+        samples = Samples(captureDataMask, totalCount, statusOffset, statusSize,
+                sampleOffset, sampleSize)
 
         sumMain = SumValues(sumMainVoltage, sumMainCurrent, sumMainPower)
         sumUsb = SumValues(sumUsbVoltage, sumUsbCurrent, sumUsbPower)
         sumAux = SumValues(sumAuxVoltage, sumAuxCurrent, sumAuxPower)
         sumAll = Sum(sumMain, sumUsb, sumAux)
 
-        return Header(headerSize,
-                identifier,
-                batterySize,
-                captureDate,
-                serial,
-                calibrationStatus,
-                voutSetting,
-                voutValue,
-                hardwareRate,
-                softwareRate,
-                powerField,
-                currentField,
-                voltageField,
-                appInfo,
-                samples,
-                sumAll)
-
+        return Header(headerSize, identifier, batterySize, captureDate, serial,
+                calibrationStatus, voutSetting, voutValue, hardwareRate,
+                softwareRate, powerField, currentField, voltageField, appInfo,
+                samples, sumAll)
 
     def readStatusPacket(self):
         """ Read and return status packet from input stream
@@ -140,39 +128,34 @@ class Pt4FileReader(Pt4BitReader):
         self.skipBytes(692)
 
         fineCurrent = Currents(mainFineCurrent, usbFineCurrent, auxFineCurrent)
-        coarseCurrent = Currents(mainCoarseCurrent, usbCoarseCurrent, auxCoarseCurrent)
+        coarseCurrent = Currents(mainCoarseCurrent, usbCoarseCurrent,
+                auxCoarseCurrent)
 
         # Only suppor hardware revisions from 3+
         # Older revisions have different sample-data format
         if hardwareRevision < 3:
-            UnsupportedHardwareException("Old hardware revision (%d) is not supported due to changes in interpretation of sample data".format(hardwareRevision))
+            UnsupportedHardwareException("Old hardware revision ({0}) is not supported due to changes in interpretation of sample data".format(hardwareRevision))
 
-        return StatusPacket(length,
-                packetType,
-                firmwareVersion,
-                protocolVersion,
-                fineCurrent,
-                coarseCurrent,
-                voltage1,
-                voltage2,
-                outputVoltageSetting,
-                temperature,
-                status,
-                serialNumber,
-                sampleRate,
-                initialUsbVoltage,
-                initialAuxVoltage,
-                hardwareRevision,
-                eventCode,
-                checkSum)
-
+        return StatusPacket(length, packetType, firmwareVersion,
+                protocolVersion, fineCurrent, coarseCurrent, voltage1,
+                voltage2, outputVoltageSetting, temperature, status,
+                serialNumber, sampleRate, initialUsbVoltage, initialAuxVoltage,
+                hardwareRevision, eventCode, checkSum)
 
     def readSample(self, header):
         """ Read and return sample data from input stream
         """
-        mainCurrent = self.readInt16() if (header.samples.captureDataMask & 0x1000 != 0) else 0
-        usbCurrent  = self.readInt16() if (header.samples.captureDataMask & 0x2000 != 0) else 0
-        auxCurrent  = self.readInt16() if (header.samples.captureDataMask & 0x4000 != 0) else 0
+        mainCurrent = usbCurrent = auxCurrent = 0
+
+        if (header.samples.captureDataMask & 0x1000 != 0):
+            mainCurrent = self.readInt16()
+
+        if (header.samples.captureDataMask & 0x2000 != 0):
+            usbCurrent  = self.readInt16()
+
+        if (header.samples.captureDataMask & 0x4000 != 0):
+            auxCurrent = self.readInt16()
+
         voltage = self.readUInt16()
 
         return RawSample(mainCurrent, usbCurrent, auxCurrent, voltage)
@@ -193,9 +176,9 @@ def readAsVector(filename):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "Usage: {0} <pt4-file>".format(sys.argv[0])
+        print("Usage: {0} <pt4-file>".format(sys.argv[0]))
         sys.exit(1)
 
-    print("# Sample(<Main current (mA)>, <USB Current (mA)>, <Aux Current (mA)>, <Voltage (V)>")
+    print("# Sample(<Main current (mA)>,<USB Current (mA)>,<Aux Current (mA)>,<Voltage (V)>")
     for smpl in readAsVector(sys.argv[1]):
-        print smpl[2]
+        print(smpl[2])

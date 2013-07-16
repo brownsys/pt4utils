@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from macropy.macros.adt import macros, case
-
-class Constants:
+class Constants(object):
     missingRawCurrent = 0x7001
     missingRawVoltage = 0xFFFF
     coarseMask = 1
@@ -10,51 +9,59 @@ class Constants:
     marker1Mask = 2
     markerMask = (marker0Mask | marker1Mask)
 
-@case
-class RawSample(mainCurrent, usbCurrent, auxCurrent, voltage):
+
+class RawSample(object):
     """ Wrapper for raw sample collected from Monson power monitor """
 
-    # Voltage missing from recorded data?
-    self.voltageMissing = Voltage(voltage).missing
-    # Main current missing from recorded data?
-    self.mainCurrentMissing = Current(mainCurrent).missing
-    # USB current missing from recorded data?
-    self.usbCurrentMissing = Current(usbCurrent).missing
-    # Aux current missing from recorded data?
-    self.auxCurrentMissing = Current(auxCurrent).missing
-    # Any sample fields missing from recorded data?
-    self.missing = (self.voltageMissing |
-            self.mainCurrentMissing |
-            self.usbCurrentMissing  |
-            self.auxCurrentMissing)
+    def __init__(self, mainCurrent, usbCurrent, auxCurrent, voltage):
+        self.mainCurrent = mainCurrent
+        self.usbCurrent = usbCurrent
+        self.auxCurrent = auxCurrent
+        self.voltage = voltage
+
+        # Voltage missing from recorded data?
+        self.voltageMissing = Voltage(voltage).missing
+        # Main current missing from recorded data?
+        self.mainCurrentMissing = Current(mainCurrent).missing
+        # USB current missing from recorded data?
+        self.usbCurrentMissing = Current(usbCurrent).missing
+        # Aux current missing from recorded data?
+        self.auxCurrentMissing = Current(auxCurrent).missing
+        # Any sample fields missing from recorded data?
+        self.missing = (self.voltageMissing |
+                self.mainCurrentMissing |
+                self.usbCurrentMissing  |
+                self.auxCurrentMissing)
 
     def mainCurrentToMilliAmps(self):
         """ Converts main current to mA """
         return Current(mainCurrent).toMilliAmps()
 
 
-@case
-class Voltage(raw):
+class Voltage(object):
     """ Data Converter (raw sample -> voltage) """
 
-    # Voltage is missing from recorded data?
-    self.missing = (self.raw == Constants.missingRawVoltage)
-    # Recorded data has marker 0 channel?
-    self.hasMarker0 = (self.raw & Constants.marker0Mask) != 0
-    # Recorded data has marker 1 channel?
-    self.hasMarker1 = (self.raw & Constants.marker1Mask) != 0
+    def __init__(self, raw):
+        self.raw = raw
+        # Voltage is missing from recorded data?
+        self.missing = (self.raw == Constants.missingRawVoltage)
+        # Recorded data has marker 0 channel?
+        self.hasMarker0 = (self.raw & Constants.marker0Mask) != 0
+        # Recorded data has marker 1 channel?
+        self.hasMarker1 = (self.raw & Constants.marker1Mask) != 0
 
     def toVolts(self):
         """ Convert voltage to V """
         return (self.raw & (~Constants.markerMask)) * 125.0 / 1e6
 
 
-@case
-class Current(raw):
+class Current(object):
     """ Data converter (raw sample -> current) """
 
-    # Current is missing from recorded data?
-    self.missing = (self.raw == Constants.missingRawCurrent)
+    def __init__(self, raw):
+        self.raw = raw
+        # Current is missing from recorded data?
+        self.missing = (self.raw == Constants.missingRawCurrent)
 
     def toMilliAmps(self):
         """ Convert current to mA """

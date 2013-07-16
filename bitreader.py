@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import struct
 import sys
 
-class BitReader:
+class BitReader(object):
     """ Interpreter for binary stream """
 
     def __init__(self, filename):
@@ -17,7 +18,6 @@ class BitReader:
             sys.stderr.write("Unexpected error: %s\n" % sys.exc_info()[0])
             raise
 
-
     def close(self):
         """ Close binary stream """
         try:
@@ -27,7 +27,6 @@ class BitReader:
         except:
             sys.stderr.write("Unexpected error: %s\n" % sys.exc_info()[0])
             raise
-
 
     def skipBytes(self, nbytes):
         """ Forward and ignore nbytes from current reading position
@@ -40,7 +39,6 @@ class BitReader:
         except:
             sys.stderr.write("Unexpected error: %s\n" % sys.exc_info()[0])
             raise
-
 
     def readUInt8(self):
         """ Read and return unsigned 8-bit integer from input
@@ -56,7 +54,6 @@ class BitReader:
             raise
 
         return val
-
 
     def readInt8(self):
         """ Read and return signed 8-bit integer from input
@@ -88,7 +85,6 @@ class BitReader:
 
         return val
 
-
     def readUInt16(self):
         """ Read and return unsigned 16-bit integer from input
         """
@@ -103,7 +99,6 @@ class BitReader:
             raise
 
         return val
-
 
     def readInt16(self):
         """ Read and return signed 16-bit integer from input
@@ -120,7 +115,6 @@ class BitReader:
 
         return val
 
-
     def readUInt32(self):
         """ Read and return unsigned 32-bit integer from input
         """
@@ -135,7 +129,6 @@ class BitReader:
             raise
 
         return val
-
 
     def readInt32(self):
         """ Read and return signed 32-bit integer from input
@@ -152,7 +145,6 @@ class BitReader:
 
         return val
 
-
     def readUInt64(self):
         """ Read and return unsigned 64-bit integer from input
         """
@@ -168,7 +160,6 @@ class BitReader:
 
         return val
 
-
     def readInt64(self):
         """ Read and return signed 64-bit integer from input
         """
@@ -183,7 +174,6 @@ class BitReader:
             raise
 
         return val
-
 
     def readString(self, length):
         """ Read and return length-byte string from input
@@ -202,7 +192,6 @@ class BitReader:
 
         return None
 
-
     def isFinished(self):
         """ Return whether finished to read input
         """
@@ -213,8 +202,3 @@ class BitReader:
             self.fin.close()
 
         return True
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

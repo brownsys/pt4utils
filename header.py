@@ -1,25 +1,26 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from macropy.macros.adt import macros, case
 import datetime
 
-@case
-class Header(headerSize,
-        identifier,
-        batterySize,
-        captureDate,
-        serial,
-        calibrationStatus,
-        voutSetting,
-        voutValue,
-        hardwareRate,
-        softwareRate,
-        powerField,
-        currentField,
-        voltageField,
-        applicationInfo,
-        samples,
-        sum):
+class Header(object):
+
+    def __init__(self, headerSize, identifier, batterySize, captureDate, serial,
+            calibrationStatus, voutSetting, voutValue, hardwareRate,
+            softwareRate, powerField, currentField, voltageField,
+            applicationInfo, samples, sum_):
+        self.headerSize = headerSize
+        self.identifier = identifier
+        self.batterySize = batterySize
+        self.captureData = captureDate
+        self.serial = serial
+        self.softwareRate = softwareRate
+        self.powerField = powerField
+        self.currentField = currentField
+        self.voltageField = voltageField
+        self.applicationInfo = applicationInfo
+        self.samples = samples
+        self.sum_ = sum_
 
     def getSampleTimestamp(index):
         """ Return timestamp for given sample from its header """
@@ -37,22 +38,38 @@ class Header(headerSize,
         return captureDate + delta
 
 
-@case
-class ApplicationInfo(captureSetting, swVersion, runMode, exitCode): pass
+class ApplicationInfo(object):
+
+    def __init__(self, captureSetting, swVersion, runMode, exitCode):
+        self.captureSetting = captureSetting
+        self.swVersion = swVersion
+        self.runMode = runMode
+        self.exitCode = exitCode
 
 
-@case
-class Samples(captureDataMask,
-        totalCount,
-        statusOffset,
-        statusSize,
-        sampleOffset,
-        sampleSize): pass
+class Samples(object):
+
+    def __init__(self, captureDataMask, totalCount, statusOffset, statusSize,
+            sampleOffset, sampleSize):
+        self.captureDataMask = captureDataMask
+        self.totalCount = totalCount
+        self.statusOffset = statusOffset
+        self.statusSize = statusSize
+        self.sampleOffset = sampleOffset
+        self.sampleSize = sampleSize
 
 
-@case
-class SumValues(voltage, current, power): pass
+class SumValues(object):
+
+    def __init__(self, voltage, current, power):
+        self.voltage = voltage
+        self.current = current
+        self.power = power
 
 
-@case
-class Sum(main, usb, aux): pass
+class Sum(object):
+
+    def __init__(self, main, usb, aux):
+        self.main = main
+        self.usb = usb
+        self.aux = aux

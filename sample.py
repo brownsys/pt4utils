@@ -1,11 +1,20 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from macropy.macros.adt import macros, case
 from raw_sample import Current, RawSample, Voltage
 
-@case
-class Sample(mainCurrent, usbCurrent, auxCurrent, voltage):
+class Sample(object):
     """ Wrapper for sample from Monsoon power monitor """
+
+    def __init__(self, mainCurrent, usbCurrent, auxCurrent, voltage):
+        self.mainCurrent = mainCurrent
+        self.usbCurrent = usbCurrent
+        self.auxCurrent = auxCurrent
+        self.voltage = voltage
+
+    def __str__(self):
+        return "{0},{1},{2},{3}".format(self.mainCurrent, self.usbCurrent,
+                self.auxCurrent, self.voltage)
 
     @staticmethod
     def fromRaw(rawSample, statusPacket):
