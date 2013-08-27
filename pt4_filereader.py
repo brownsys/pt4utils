@@ -183,19 +183,19 @@ class Pt4FileReader(Pt4BitReader):
 
         return RawSample(mainCurrent, usbCurrent, auxCurrent, voltage)
 
+    @classmethod
+    def readAsVector(cls, filename):
+        reader = cls(filename)
+        header = reader.readHeader()
+        statusPacket = reader.readStatusPacket()
+        seq = []
 
-def readAsVector(filename):
-    reader = Pt4FileReader(filename)
-    header = reader.readHeader()
-    statusPacket = reader.readStatusPacket()
-    seq = []
+        while reader.isFinished() is False:
+            rawSample = reader.readSample(header)
+            sample = Sample.fromRaw(rawSample, statusPacket)
+            yield (header, statusPacket, sample)
 
-    while reader.isFinished() is False:
-        rawSample = reader.readSample(header)
-        sample = Sample.fromRaw(rawSample, statusPacket)
-        yield (header, statusPacket, sample)
-
-    reader.close()
+        reader.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -203,5 +203,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print("# Sample(<Main current (mA)>,<USB Current (mA)>,<Aux Current (mA)>,<Voltage (V)>")
-    for smpl in readAsVector(sys.argv[1]):
+    for smpl in Pt4FileReader.readAsVector(sys.argv[1]):
         print(smpl[2])
