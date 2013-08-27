@@ -8,6 +8,11 @@ by other tools (Matlab, numpy, etc.)
 pt4utils is a heavily based on the Scala script written by Aki Saarinen et al.
 for [SmartDiet](https://github.com/akisaarinen/smartdiet).
 
+Usage
+-----
+
+    $ python pt4_filereader.py <example.pt4>
+
 License
 -------
 
